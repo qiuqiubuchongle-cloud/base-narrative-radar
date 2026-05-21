@@ -1,5 +1,9 @@
 # Base Evidence Radar / Base 项目证据雷达
 
+🌐 Language / 语言：[中文](./README.md) | [English](./README.en.md)
+
+📘 Product Intro / 产品介绍：[中文介绍](./docs/product-introduction.zh.md) | [English Intro](./docs/product-introduction.en.md)
+
 > 🧭 一个给 Base 产品型 token 做第一轮证据筛查的 Codex Skill。
 > 输入 CA / 官网 / X / GitHub / 项目文案，输出一份纯文字证据报告。
 
@@ -369,8 +373,10 @@ data/reports/<ca>.txt
 base-narrative-radar/
 ├── SKILL.md
 ├── README.md
+├── README.en.md
 ├── docs/
-│   └── product-introduction.zh.md
+│   ├── product-introduction.zh.md
+│   └── product-introduction.en.md
 ├── assets/
 │   ├── base-radar-flow.svg
 │   └── base-report-card.svg

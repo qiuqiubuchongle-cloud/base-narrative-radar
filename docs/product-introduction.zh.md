@@ -1,5 +1,9 @@
 # 🧭 Base 项目证据雷达：先看官网和 GitHub，再谈叙事
 
+🌐 语言：[中文](./product-introduction.zh.md) | [English](./product-introduction.en.md)
+
+🏠 首页：[中文 README](../README.md) | [English README](../README.en.md)
+
 ![Base 项目证据雷达工作流](../assets/base-radar-flow.svg)
 
 ## 1. 一句话介绍
