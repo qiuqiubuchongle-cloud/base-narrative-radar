@@ -39,6 +39,7 @@ onchainos wallet status
 
 - `BASESCAN_API_KEY` 或 `ETHERSCAN_API_KEY`：独立验证合约创建者；
 - `TAVILY_API_KEY` / `BRAVE_API_KEY` / `SERPAPI_KEY`：Deep 模式检索新闻、生态资料、同叙事案例。
+- `TWITTER_BEARER_TOKEN` 或 `X_BEARER_TOKEN`：检索 X/Twitter 官方认领、KOL 讨论和同名噪音。
 
 如果没有 OnchainOS，`npm run base:discover -- 0xCA` 仍然可以做一部分资料发现；但完整尽调报告会缺少 OKX 链上证据。
 
@@ -106,6 +107,20 @@ Base 现在不是纯 meme 玩法，越来越多机会披着“产品”的外衣
 - repo 过期、归档或明显不相关。
 
 同名 GitHub 只能算弱证据，显式关联才是强证据。
+
+### X / Twitter 证据
+
+Base 项目判断里，X 很多时候比官网更关键。
+
+配置 X API 后，它会搜索 CA、项目名、symbol、官网域名、官方 handle，并判断：
+
+- 官方账号是否直接认领；
+- dev 有没有持续发声；
+- 高粉账号有没有讨论；
+- 传播是自然扩散，还是低质量同名噪音；
+- 推文互动是否足够支撑叙事热度。
+
+没有 X API 时不会报错，只会在报告里标记 `missing_api`，继续使用已发现的 X 链接。
 
 ### 叙事价值评分
 

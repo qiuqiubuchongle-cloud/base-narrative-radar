@@ -17,6 +17,7 @@ Use this skill for:
 - Base CA 初判、Base token 叙事分析、Clanker/Virtuals/Zora/Flaunch 项目判断
 - 只给 CA 时自动发现官网、X/Twitter、GitHub、Docs、Telegram、DEX Screener 链接
 - 官网真实性、GitHub 活跃度、X/Twitter 认领、dev 是否在 build
+- 配置 X/Twitter API 后检索官方认领、传播质量、KOL 互动和同名噪音
 - 产品式 rug 风险：有官网/白皮书/GitHub/demo，但产品可能只是包装
 - 同叙事新闻/生态资料检索，只在用户要求深挖时运行
 
@@ -44,7 +45,7 @@ Base 不按纯土狗链理解。重点看：
    - Use **deep** only when user says “深挖/研究新闻/找同叙事/我要发内容/产品文档”.
 3. If the user only gives CA, run auto-discovery first:
    - `npm run base:dd:auto -- <CA>`
-   - Discovery uses DEX Screener, OKX OnchainOS, Basescan when API key exists, and GitHub Search.
+   - Discovery uses DEX Screener, OKX OnchainOS, Basescan when API key exists, GitHub Search, and optional X API.
 4. If the user already provides reliable website/X/GitHub, run direct due diligence:
    - Quick: `npm run base:dd:quick -- <CA> [args...]`
    - Deep: `npm run base:dd:deep -- <CA> [args...]`
@@ -87,6 +88,16 @@ onchainos wallet status
 ```
 
 OnchainOS CLI is required for the full due-diligence report. Without it, `base:discover` can still find DEX Screener and GitHub metadata, but OKX token report, risk, creator, and protocol evidence will be missing.
+
+Optional X/Twitter search:
+
+```bash
+export TWITTER_BEARER_TOKEN=xxxxx
+# or
+export X_BEARER_TOKEN=xxxxx
+```
+
+When configured, Auto/Deep mode adds an X evidence section with official-account tweets, high-follower discussion, query terms, and tweet links. Without it, report `missing_api` and continue.
 
 ```bash
 npm run base:dd:auto -- \

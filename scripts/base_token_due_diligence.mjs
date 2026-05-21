@@ -426,6 +426,160 @@ function buildConceptQueries({ token, narrative, launchpad, website, userNotes }
   return uniq(base).slice(0, Number(config.thresholds?.maxConceptQueries || 5));
 }
 
+function twitterBearerToken() {
+  return process.env.TWITTER_BEARER_TOKEN || process.env.X_BEARER_TOKEN || process.env.X_API_BEARER_TOKEN || "";
+}
+
+function twitterHandleFromUrl(url) {
+  const match = String(url || "").match(/(?:x\.com|twitter\.com)\/([A-Za-z0-9_]{1,15})(?:[/?#]|$)/i);
+  if (!match) return "";
+  if (/^(home|search|intent|share|i)$/i.test(match[1])) return "";
+  return match[1];
+}
+
+function buildTwitterQueries({ token, urls, website, userNotes }) {
+  const handles = uniq((urls.twitter || []).map(twitterHandleFromUrl).filter(Boolean));
+  const domain = domainFromUrl(urls.website || website?.url || "");
+  const values = uniq([
+    token.address,
+    token.name,
+    token.symbol,
+    domain,
+    ...handles.map((handle) => `from:${handle}`),
+    ...handles.map((handle) => `@${handle}`),
+    userNotes?.match(/@[A-Za-z0-9_]{1,15}/g)?.join(" ")
+  ].filter(Boolean));
+  const queries = [];
+  if (token.address) queries.push(`"${token.address}"`);
+  for (const handle of handles) {
+    queries.push(`from:${handle}`);
+    queries.push(`@${handle} (${token.name || token.symbol || token.address})`);
+  }
+  if (token.name) queries.push(`"${token.name}" Base`);
+  if (token.symbol && token.symbol !== token.name) queries.push(`"${token.symbol}" Base`);
+  if (domain) queries.push(`"${domain}"`);
+  if (values.length) queries.push(values.slice(0, 4).join(" OR "));
+  return uniq(queries.map((q) => q.replace(/\s+/g, " ").trim()).filter((q) => q.length >= 3))
+    .slice(0, Number(config.thresholds?.maxTwitterQueries || 6));
+}
+
+async function searchTwitterRecent(query) {
+  const key = twitterBearerToken();
+  if (!key) return { ok: false, reason: "missing_twitter_bearer_token", tweets: [] };
+  const params = new URLSearchParams({
+    query: `${query} -is:retweet`,
+    max_results: "10",
+    "tweet.fields": "created_at,author_id,public_metrics,lang,context_annotations",
+    "expansions": "author_id",
+    "user.fields": "username,name,verified,public_metrics"
+  });
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 12_000);
+  try {
+    const res = await fetch(`https://api.twitter.com/2/tweets/search/recent?${params}`, {
+      signal: controller.signal,
+      headers: { authorization: `Bearer ${key}`, accept: "application/json" }
+    });
+    const text = await res.text();
+    if (!res.ok) return { ok: false, reason: `twitter_api_http_${res.status}`, raw: text.slice(0, 500), tweets: [] };
+    const json = JSON.parse(text);
+    const users = new Map((json.includes?.users || []).map((user) => [user.id, user]));
+    return {
+      ok: true,
+      tweets: (json.data || []).map((tweet) => {
+        const user = users.get(tweet.author_id) || {};
+        return {
+          query,
+          id: tweet.id,
+          url: user.username ? `https://x.com/${user.username}/status/${tweet.id}` : `https://x.com/i/web/status/${tweet.id}`,
+          text: tweet.text,
+          created_at: tweet.created_at,
+          author_id: tweet.author_id,
+          username: user.username || "",
+          author_name: user.name || "",
+          verified: Boolean(user.verified),
+          followers: Number(user.public_metrics?.followers_count || 0),
+          metrics: tweet.public_metrics || {}
+        };
+      })
+    };
+  } catch (error) {
+    return { ok: false, reason: error.message || String(error), tweets: [] };
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+async function analyzeTwitterEvidence({ token, urls, website, userNotes }) {
+  const queries = buildTwitterQueries({ token, urls, website, userNotes });
+  const hasKey = Boolean(twitterBearerToken());
+  if (!hasKey) return emptyTwitterEvidence("missing_api", queries);
+  const tweets = [];
+  const errors = [];
+  for (const query of queries) {
+    const res = await searchTwitterRecent(query);
+    if (res.ok) tweets.push(...res.tweets);
+    else errors.push({ query, reason: res.reason });
+  }
+  const deduped = [];
+  const seen = new Set();
+  for (const tweet of tweets) {
+    if (seen.has(tweet.id)) continue;
+    seen.add(tweet.id);
+    deduped.push(tweet);
+  }
+  deduped.sort((a, b) => {
+    const am = Number(a.metrics?.like_count || 0) + Number(a.metrics?.retweet_count || 0) * 2 + Number(a.followers || 0) / 1000;
+    const bm = Number(b.metrics?.like_count || 0) + Number(b.metrics?.retweet_count || 0) * 2 + Number(b.followers || 0) / 1000;
+    return bm - am;
+  });
+  const handles = uniq((urls.twitter || []).map(twitterHandleFromUrl).filter(Boolean).map((h) => h.toLowerCase()));
+  const officialTweets = deduped.filter((tweet) => handles.includes(String(tweet.username || "").toLowerCase()));
+  const highFollowerTweets = deduped.filter((tweet) => Number(tweet.followers || 0) >= Number(config.thresholds?.twitterInfluencerMinFollowers || 5000));
+  const score = clamp(
+    Math.min(officialTweets.length, 4) * 18 +
+    Math.min(highFollowerTweets.length, 5) * 8 +
+    Math.min(deduped.length, 20) * 2,
+    0,
+    100
+  );
+  const status = score >= 70 ? "strong_x_evidence" : score >= 35 ? "some_x_evidence" : deduped.length ? "weak_x_noise" : "not_found";
+  return {
+    status,
+    score,
+    queries,
+    tweets: deduped.slice(0, Number(config.thresholds?.maxTwitterLinks || 12)),
+    officialTweetCount: officialTweets.length,
+    highFollowerTweetCount: highFollowerTweets.length,
+    errors,
+    read: twitterEvidenceRead(status, hasKey)
+  };
+}
+
+function emptyTwitterEvidence(reason = "skipped", queries = []) {
+  const missing = reason === "missing_api";
+  return {
+    status: missing ? "missing_api" : "skipped",
+    score: 0,
+    queries,
+    tweets: [],
+    officialTweetCount: 0,
+    highFollowerTweetCount: 0,
+    errors: [],
+    read: missing
+      ? "未配置 TWITTER_BEARER_TOKEN / X_BEARER_TOKEN，跳过 X 实时搜索；只能使用 DEX Screener 或用户提供的 X 链接。"
+      : "当前模式跳过 X 实时搜索。"
+  };
+}
+
+function twitterEvidenceRead(status, hasKey) {
+  if (!hasKey) return "未配置 X API，无法检索实时推特证据。";
+  if (status === "strong_x_evidence") return "X 证据较强：能看到官方账号或较高影响力账号的相关讨论。";
+  if (status === "some_x_evidence") return "X 上有一定讨论，但还需要判断是否是官方认领或二级传播。";
+  if (status === "weak_x_noise") return "X 上有零散结果，可能只是同名噪音或低质量传播。";
+  return "X 最近搜索暂未发现有效讨论。";
+}
+
 async function searchWebLinks(query) {
   const apiRows = [
     ...await searchTavily(query),
@@ -754,8 +908,12 @@ function buildModuleSummary(report) {
       evidence: report.scores.website.reasons
     },
     twitter_reality: {
-      status: report.urls.twitter?.length ? "linked_unverified" : "missing",
-      evidence: report.urls.twitter?.length ? report.urls.twitter : ["no X/Twitter link found"]
+      status: report.twitterEvidence.status,
+      evidence: [
+        ...(report.urls.twitter?.length ? report.urls.twitter : ["no X/Twitter link found"]),
+        report.twitterEvidence.read,
+        ...report.twitterEvidence.tweets.slice(0, 4).map((tweet) => `@${tweet.username}: ${tweet.url}`)
+      ]
     },
     github_reality: {
       status: report.checks.github.repos.some((r) => r.explicit) ? "explicit" : report.checks.github.repos.length ? "name_search_only" : "missing",
@@ -841,6 +999,9 @@ async function analyzeToken(tokenAddress, opts = {}) {
   const conceptNews = isDeep
     ? await analyzeConceptNews({ token, narrative, launchpad, website, userNotes: opts.notes })
     : emptyConceptNews(opts.mode);
+  const twitterEvidence = (isDeep || opts.autoDiscover)
+    ? await analyzeTwitterEvidence({ token, urls, website, userNotes: opts.notes })
+    : emptyTwitterEvidence("skipped", buildTwitterQueries({ token, urls, website, userNotes: opts.notes }));
   const onchainScore = scoreOnchain({
     priceInfo: report.priceInfo,
     security: report.security,
@@ -871,6 +1032,7 @@ async function analyzeToken(tokenAddress, opts = {}) {
     },
     launchpad,
     narrative,
+    twitterEvidence,
     externalSignals,
     conceptNews,
     userInputs: opts,
@@ -935,6 +1097,16 @@ function formatTextReport(report) {
     for (const url of report.urls.twitter) lines.push(`- ${url}`);
   } else {
     lines.push(`暂无明确 X 链接`);
+  }
+  lines.push(`X 搜索状态：${report.twitterEvidence.status}`);
+  lines.push(`X 说明：${report.twitterEvidence.read}`);
+  if (report.twitterEvidence.queries?.length) lines.push(`X 检索词：${report.twitterEvidence.queries.join(" | ")}`);
+  if (report.twitterEvidence.tweets?.length) {
+    for (const tweet of report.twitterEvidence.tweets.slice(0, 8)) {
+      lines.push(`- @${tweet.username || tweet.author_id}：${String(tweet.text || "").replace(/\s+/g, " ").slice(0, 140)}`);
+      lines.push(`  链接：${tweet.url}`);
+      lines.push(`  粉丝：${tweet.followers || 0}；互动：${tweet.metrics?.like_count || 0} likes / ${tweet.metrics?.retweet_count || 0} RT`);
+    }
   }
   lines.push("");
   lines.push(`GitHub`);

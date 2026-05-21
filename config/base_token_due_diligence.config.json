@@ -11,7 +11,10 @@
     "maxPublicExternalQueries": 3,
     "maxExternalLinks": 20,
     "maxConceptQueries": 5,
-    "maxConceptLinks": 12
+    "maxConceptLinks": 12,
+    "maxTwitterQueries": 6,
+    "maxTwitterLinks": 12,
+    "twitterInfluencerMinFollowers": 5000
   },
   "productModules": [
     "ca_resolver",
@@ -19,6 +22,7 @@
     "launchpad_birthplace",
     "website_reality",
     "twitter_reality",
+    "twitter_search_evidence",
     "github_reality",
     "narrative_value",
     "product_rug_risk",
