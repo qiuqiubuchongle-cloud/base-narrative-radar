@@ -1,0 +1,24 @@
+{
+  "name": "base-narrative-radar",
+  "version": "1.0.0",
+  "private": false,
+  "description": "Base token narrative due diligence skill: CA, website, X/Twitter, GitHub, narrative value, and product-rug risk.",
+  "type": "module",
+  "scripts": {
+    "base:dd": "BASE_DD_CONFIG=config/base_token_due_diligence.config.json BASE_DD_OUT_DIR=data/reports node scripts/base_token_due_diligence.mjs",
+    "base:dd:quick": "BASE_DD_CONFIG=config/base_token_due_diligence.config.json BASE_DD_OUT_DIR=data/reports node scripts/base_token_due_diligence.mjs --quick",
+    "base:dd:deep": "BASE_DD_CONFIG=config/base_token_due_diligence.config.json BASE_DD_OUT_DIR=data/reports node scripts/base_token_due_diligence.mjs --deep",
+    "test": "node --check scripts/base_token_due_diligence.mjs"
+  },
+  "keywords": [
+    "base",
+    "onchain",
+    "meme",
+    "clanker",
+    "virtuals",
+    "github",
+    "token",
+    "narrative"
+  ],
+  "license": "MIT"
+}

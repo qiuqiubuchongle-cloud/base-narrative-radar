@@ -1,0 +1,9 @@
+interface:
+  display_name: "Base 叙事雷达"
+  short_description: "Base CA 叙事、官网、X、GitHub 快速尽调"
+  brand_color: "#0052FF"
+  default_prompt: "Use $base-narrative-radar to quickly judge this Base token CA and tell me whether it is worth watching."
+
+policy:
+  allow_implicit_invocation: true
+

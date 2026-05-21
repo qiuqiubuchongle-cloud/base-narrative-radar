@@ -1,0 +1,129 @@
+{
+  "chain": "base",
+  "chainIndex": "8453",
+  "thresholds": {
+    "maxMarketCapUsdForEarly": 2000000,
+    "minLiquidityUsd": 10000,
+    "minHolders": 30,
+    "minWebsiteTextLength": 800,
+    "githubRecentPushDays": 45,
+    "maxExternalQueries": 10,
+    "maxPublicExternalQueries": 3,
+    "maxExternalLinks": 20,
+    "maxConceptQueries": 5,
+    "maxConceptLinks": 12
+  },
+  "productModules": [
+    "ca_resolver",
+    "onchain_safety",
+    "launchpad_birthplace",
+    "website_reality",
+    "twitter_reality",
+    "github_reality",
+    "narrative_value",
+    "product_rug_risk",
+    "external_signal_evidence",
+    "related_concept_news"
+  ],
+  "externalSignalQueries": [
+    "{name} Base",
+    "{symbol} Base",
+    "{domain} crypto",
+    "{name} GitHub",
+    "{name} Clanker",
+    "{name} Virtuals",
+    "{name} Farcaster",
+    "{name} Zora",
+    "{name} Flaunch"
+  ],
+  "externalSignalSourceTypes": [
+    "official_source",
+    "ecosystem_source",
+    "news_source",
+    "kol_source",
+    "mirror_source"
+  ],
+  "rugRiskTypes": [
+    {
+      "id": "story_shell",
+      "label": "概念很强但产品证据很薄"
+    },
+    {
+      "id": "dev_silent",
+      "label": "dev 不认领、不互动、不更新"
+    },
+    {
+      "id": "fake_product",
+      "label": "有官网/白皮书，但没有可用产品"
+    },
+    {
+      "id": "social_pump",
+      "label": "社媒只围绕价格和喊单"
+    },
+    {
+      "id": "repo_mismatch",
+      "label": "GitHub 与 token 叙事不一致"
+    },
+    {
+      "id": "launchpad_noise",
+      "label": "发射台批量噪音项目"
+    },
+    {
+      "id": "liquidity_exit_risk",
+      "label": "流动性不足，退出困难"
+    }
+  ],
+  "launchpads": [
+    {
+      "name": "Clanker",
+      "keywords": ["clanker", "farcaster", "warpcast"]
+    },
+    {
+      "name": "Virtuals",
+      "keywords": ["virtuals", "genesis", "agent"]
+    },
+    {
+      "name": "Zora",
+      "keywords": ["zora", "creator", "content coin"]
+    },
+    {
+      "name": "Flaunch",
+      "keywords": ["flaunch", "uniswap v4", "hook"]
+    },
+    {
+      "name": "Base App",
+      "keywords": ["base app", "baseapp", "coinbase wallet"]
+    }
+  ],
+  "launchpadDomains": ["clanker.world", "virtuals.io", "app.virtuals.io", "zora.co", "flaunch.gg", "base.org"],
+  "narratives": [
+    {
+      "name": "AI Agent",
+      "keywords": ["agent", "ai", "llm", "automation", "autonomous", "inference", "model", "api"]
+    },
+    {
+      "name": "Developer Tool",
+      "keywords": ["developer", "github", "sdk", "api", "tool", "workflow", "automation", "devtool"]
+    },
+    {
+      "name": "Farcaster / Social Asset",
+      "keywords": ["farcaster", "warpcast", "social", "creator", "cast", "channel"]
+    },
+    {
+      "name": "Content / Creator Economy",
+      "keywords": ["content", "creator", "media", "zora", "mint", "subscribe", "patron"]
+    },
+    {
+      "name": "Trading / Finance Tool",
+      "keywords": ["trading", "market", "yield", "payment", "wallet", "portfolio", "dex", "liquidity"]
+    },
+    {
+      "name": "Automation Workflow",
+      "keywords": ["workflow", "automation", "trigger", "bot", "scheduler", "pipeline", "task"]
+    },
+    {
+      "name": "Infra / API / Data",
+      "keywords": ["infra", "api", "data", "indexer", "database", "oracle", "sdk", "protocol"]
+    }
+  ]
+}
