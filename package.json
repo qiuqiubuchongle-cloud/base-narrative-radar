@@ -2,7 +2,7 @@
   "name": "base-narrative-radar",
   "version": "1.0.0",
   "private": false,
-  "description": "Base token narrative due diligence skill: CA, website, X/Twitter, GitHub, narrative value, and product-rug risk.",
+  "description": "Evidence-first Base token due diligence skill: CA, website, X/Twitter, GitHub, product proof, and product-rug risk.",
   "type": "module",
   "scripts": {
     "base:discover": "BASE_DISCOVER_OUT_DIR=data/discovery node scripts/base_project_discover.mjs",
@@ -20,7 +20,8 @@
     "virtuals",
     "github",
     "token",
-    "narrative"
+    "narrative",
+    "due-diligence"
   ],
   "license": "MIT"
 }

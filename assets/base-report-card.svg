@@ -16,7 +16,7 @@
     <text x="282" y="322" fill="#8DB6FF" font-size="20" font-weight="700">66/100</text>
 
     <rect x="408" y="286" width="132" height="60" rx="12" fill="#2A1B08" stroke="#B87503"/>
-    <text x="430" y="322" fill="#FFD38A" font-size="20" font-weight="700">85/100</text>
+    <text x="430" y="322" fill="#FFD38A" font-size="20" font-weight="700">证据</text>
 
     <text x="108" y="392" fill="#FFFFFF" font-size="18" font-weight="700">一句话判断</text>
     <text x="108" y="424" fill="#AAB4C0" font-size="16">有产品叙事和链上基础，但仍需要</text>
@@ -37,7 +37,7 @@
     <text x="692" y="364" fill="#DDE8FF" font-size="17">GitHub：显式关联 / 最近更新 / 同名撞车</text>
 
     <circle cx="668" cy="406" r="8" fill="#0052FF"/>
-    <text x="692" y="412" fill="#DDE8FF" font-size="17">叙事价值：Base 用户能否快速理解</text>
+    <text x="692" y="412" fill="#DDE8FF" font-size="17">叙事参考：Base 用户能否快速理解</text>
 
     <circle cx="668" cy="454" r="8" fill="#0052FF"/>
     <text x="692" y="460" fill="#DDE8FF" font-size="17">产品式 Rug：故事很强但证据很薄</text>

@@ -1243,7 +1243,7 @@ async function analyzeToken(tokenAddress, opts = {}) {
 
 function formatTextReport(report) {
   const lines = [];
-  lines.push(`Base 叙事雷达检测报告`);
+  lines.push(`Base 项目证据雷达检测报告`);
   lines.push("");
   lines.push(`项目：${report.token.name || "UNKNOWN"} (${report.token.symbol || "UNKNOWN"})`);
   lines.push(`合约：${report.token.address}`);
@@ -1252,8 +1252,8 @@ function formatTextReport(report) {
   lines.push(`综合评分：${report.finalScore}/100`);
   lines.push(`产品证据等级：${report.productEvidence.grade}`);
   lines.push(`产品证据评分：${report.productEvidence.score}/100`);
-  lines.push(`叙事类型：${report.narrative.primary}`);
-  lines.push(`叙事价值评分：${report.scores.narrative.score}/100`);
+  lines.push(`叙事参考：${report.narrative.primary}`);
+  lines.push(`叙事参考分：${report.scores.narrative.score}/100`);
   lines.push(`发射平台：${report.launchpad.platform}`);
   lines.push(`产品式 Rug 风险：${report.rugRisk.level}${report.rugRisk.riskTypes.length ? `（${report.rugRisk.riskTypes.join(", ")}）` : ""}`);
   lines.push("");
@@ -1375,15 +1375,15 @@ function websiteRoleLabel(role) {
 
 function narrativeValueRead(report) {
   const score = report.scores.narrative.score;
-  if (score >= 80) return `叙事价值高。这个项目的故事比较容易被 Base 用户理解，并且有发射平台、官网或 GitHub 证据支撑。`;
-  if (score >= 60) return `叙事价值中上。方向是成立的，但还需要 X 认领、真实用户或更多产品更新来确认。`;
-  if (score >= 40) return `叙事价值一般。有概念但证据偏薄，容易停留在包装层。`;
-  return `叙事价值偏低。当前还看不出清晰的 Base 原生故事或产品落地路径。`;
+  if (score >= 80) return `叙事参考强。这个故事比较容易被 Base 用户理解，但仍要以官网、GitHub、X 证据为准。`;
+  if (score >= 60) return `叙事参考中上。方向是成立的，但还需要 X 认领、真实用户或更多产品更新来确认。`;
+  if (score >= 40) return `叙事参考一般。有概念但证据偏薄，容易停留在包装层。`;
+  return `叙事参考偏弱。当前还看不出清晰的 Base 原生故事或产品落地路径。`;
 }
 
 function oneLineRead(report) {
   if (report.verdict === "strong_watch") {
-    return "链上安全、产品证据和叙事证据都比较完整，值得进入重点观察。";
+    return "链上基础、官网证据、GitHub 证据和 X 认领相对完整，值得进入重点观察。";
   }
   if (report.verdict === "watch") {
     return "有一定产品叙事和链上基础，但仍需要 dev/X/GitHub 或真实使用继续确认。";

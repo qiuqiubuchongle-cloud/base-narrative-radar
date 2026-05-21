@@ -1,7 +1,7 @@
 <svg width="1200" height="520" viewBox="0 0 1200 520" fill="none" xmlns="http://www.w3.org/2000/svg">
   <rect width="1200" height="520" rx="28" fill="#050505"/>
   <rect x="28" y="28" width="1144" height="464" rx="24" fill="#0B0D10" stroke="#1E2329"/>
-  <text x="70" y="82" fill="#F5F7FA" font-family="Inter, Arial, sans-serif" font-size="34" font-weight="700">Base 叙事雷达工作流</text>
+  <text x="70" y="82" fill="#F5F7FA" font-family="Inter, Arial, sans-serif" font-size="34" font-weight="700">Base 项目证据雷达工作流</text>
   <text x="70" y="118" fill="#8C96A3" font-family="Inter, Arial, sans-serif" font-size="18">CA / Website / X / GitHub / Project Copy in, evidence map out.</text>
 
   <g font-family="Inter, Arial, sans-serif">
@@ -23,10 +23,10 @@
     <path d="M636 229L648 241L636 253" stroke="#0052FF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
 
     <rect x="668" y="158" width="210" height="166" rx="18" fill="#11161D" stroke="#2B333D"/>
-    <text x="696" y="198" fill="#FFFFFF" font-size="22" font-weight="700">叙事判断</text>
+    <text x="696" y="198" fill="#FFFFFF" font-size="22" font-weight="700">叙事参考</text>
     <text x="696" y="232" fill="#AAB4C0" font-size="16">Agent / Dev Tool</text>
     <text x="696" y="256" fill="#AAB4C0" font-size="16">Farcaster / Creator</text>
-    <text x="696" y="280" fill="#AAB4C0" font-size="16">Narrative Score</text>
+    <text x="696" y="280" fill="#AAB4C0" font-size="16">Context Only</text>
 
     <path d="M898 241H958" stroke="#0052FF" stroke-width="4" stroke-linecap="round"/>
     <path d="M950 229L962 241L950 253" stroke="#0052FF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>

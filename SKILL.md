@@ -3,15 +3,15 @@ name: base-narrative-radar
 description: |
   Use when the user wants to analyze a Base token CA, Base meme/product token, Clanker/Virtuals/Zora/Flaunch/Base App launch,
   or asks whether a Base project's website, X/Twitter, GitHub, narrative, launchpad, or "product rug" risk is real. Supports
-  automatic project discovery from CA, quick screening, and deep narrative/news evidence checks. Chinese display name: Base 叙事雷达.
+  automatic project discovery from CA, quick screening, and evidence-first website/GitHub/X checks. Chinese display name: Base 项目证据雷达.
 metadata:
   author: local
   version: "1.0.0"
 ---
 
-# Base 叙事雷达
+# Base 项目证据雷达
 
-Base 叙事雷达用于判断 Base 链产品型 token：输入 CA，自动挖官网/X/GitHub/Docs，再优先判断官网和 GitHub 的产品证据是否成立，最后再把叙事作为参考。
+Base 项目证据雷达用于判断 Base 链产品型 token：输入 CA，自动挖官网/X/GitHub/Docs，再优先判断官网和 GitHub 的产品证据是否成立，最后再把叙事作为参考。
 
 Use this skill for:
 - Base CA 初判、Base token 产品证据分析、Clanker/Virtuals/Zora/Flaunch 项目判断
