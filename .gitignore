@@ -2,5 +2,7 @@
 node_modules/
 data/reports/*.json
 data/reports/*.txt
+data/xai-research/*.json
+data/xai-research/*.txt
 logs/
 .DS_Store

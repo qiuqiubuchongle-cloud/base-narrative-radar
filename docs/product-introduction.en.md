@@ -44,6 +44,7 @@ Optional enhancements:
 - `BASESCAN_API_KEY` or `ETHERSCAN_API_KEY`: independently verify contract creator.
 - `TAVILY_API_KEY` / `BRAVE_API_KEY` / `SERPAPI_KEY`: Deep-mode news, ecosystem references, and similar narrative cases.
 - `TWITTER_BEARER_TOKEN` or `X_BEARER_TOKEN`: X/Twitter official claims, KOL discussion, and same-name noise.
+- `XAI_API_KEY`: use Grok/xAI Web Search + X Search for mechanism, team, entity-interaction, and valuation research.
 
 Without OnchainOS, `npm run base:discover -- 0xCA` can still discover partial information. The full due diligence report will miss OKX on-chain evidence.
 
@@ -211,6 +212,18 @@ Use Deep mode when preparing content, studying a focused project, or researching
 Deep mode additionally searches external news, ecosystem references, KOL discussion, similar narrative cases, and mirror pages.
 
 It works best with `TAVILY_API_KEY`, `BRAVE_API_KEY`, or `SERPAPI_KEY`; otherwise external search can be slow or sparse.
+
+### Grok Mode
+
+If `XAI_API_KEY` is configured, run:
+
+```bash
+npm run base:grok -- 0xTokenAddress --website https://example.xyz --twitter https://x.com/project --github https://github.com/project/repo --market-cap "$1.2M"
+```
+
+This mode asks Grok to use Web Search and X Search, then produce a more investment-research-like report: product form, mechanism type, flywheel, irreplaceability, team and dev background, historical risk, known-entity interaction, and a market-cap-adjusted score and expectation.
+
+Use it after the first-pass filter finds something worth deeper research. For daily fast checks, start with Auto or Quick.
 
 ## 7. Verdict Levels
 

@@ -64,6 +64,7 @@ npm run base:dd:deep -- 0xTokenAddress --notes "paste project copy, tweets, dev 
 | Basescan / Etherscan API key | Optional | Independently verify contract creator |
 | Tavily / Brave / SerpAPI | Optional | Deep-mode news, ecosystem references, similar narrative cases |
 | X / Twitter API Bearer Token | Optional but useful | Search official claims, dev interaction, KOL discussion, and same-name noise |
+| xAI / Grok API key | Optional enhancement | Use Grok Web Search + X Search for mechanism, team, entity-interaction, and valuation research |
 
 Optional environment variables:
 
@@ -77,6 +78,14 @@ If you have an X API v2 Bearer Token:
 TWITTER_BEARER_TOKEN=xxxxx
 # or
 X_BEARER_TOKEN=xxxxx
+```
+
+For Grok research mode:
+
+```bash
+XAI_API_KEY=xxxxx
+XAI_MODEL=grok-4.3
+BASE_XAI_LANGUAGE=zh
 ```
 
 ## What Is It?
@@ -315,6 +324,39 @@ Deep mode works best with:
 
 Without a search API, it can still run, but results may be slower and thinner.
 
+### Grok: Mechanism, Team, Entity Interaction, and Valuation Research
+
+If `XAI_API_KEY` is configured, you can run a Grok/xAI research pass:
+
+```bash
+npm run base:grok -- 0xTokenAddress \
+  --website https://example.xyz \
+  --twitter https://x.com/project \
+  --github https://github.com/project/repo \
+  --market-cap "$1.2M" \
+  --language en
+```
+
+It uses Grok Web Search and X Search to analyze:
+
+- product form: what it is and who uses it;
+- mechanism type: new mechanism, assembled mechanism, fork, or narrative wrapper;
+- flywheel: growth, revenue, usage, and token-value loop;
+- irreplaceability: whether the mechanism is hard to copy;
+- team and dev background: prior roles, projects, GitHub/X activity, reputation risk;
+- known-entity interaction: real builders, funds, protocols, or ecosystem accounts;
+- historical risk: old projects, abandoned repos, fake links, suspicious rebrands, same-name collisions;
+- market-cap-adjusted expectation: what evidence is needed to justify the current valuation.
+
+Outputs are saved to:
+
+```text
+data/xai-research/<ca>.xai.json
+data/xai-research/<ca>.xai.txt
+```
+
+Use this when a project is interesting enough for deeper research. For fast daily filtering, start with `base:dd:auto`.
+
 ## Example Output
 
 ![Report Card Example](./assets/base-report-card.svg)
@@ -383,7 +425,8 @@ base-narrative-radar/
 │   └── base-narrative-rubric.md
 ├── scripts/
 │   ├── base_project_discover.mjs
-│   └── base_token_due_diligence.mjs
+│   ├── base_token_due_diligence.mjs
+│   └── base_xai_research.mjs
 ├── config/
 │   └── base_token_due_diligence.config.json
 ├── agents/

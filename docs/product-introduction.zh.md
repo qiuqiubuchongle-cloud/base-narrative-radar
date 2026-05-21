@@ -44,6 +44,7 @@ onchainos wallet status
 - `BASESCAN_API_KEY` 或 `ETHERSCAN_API_KEY`：独立验证合约创建者；
 - `TAVILY_API_KEY` / `BRAVE_API_KEY` / `SERPAPI_KEY`：Deep 模式检索新闻、生态资料、同叙事案例。
 - `TWITTER_BEARER_TOKEN` 或 `X_BEARER_TOKEN`：检索 X/Twitter 官方认领、KOL 讨论和同名噪音。
+- `XAI_API_KEY`：调用 Grok/xAI 的 Web Search + X Search，做机制、团队、实体互动和市值预期深研。
 
 如果没有 OnchainOS，`npm run base:discover -- 0xCA` 仍然可以做一部分资料发现；但完整尽调报告会缺少 OKX 链上证据。
 
@@ -211,6 +212,18 @@ CA → DEX Screener / OKX / Basescan / GitHub Search 自动发现 → 尽调 →
 Deep 模式会额外检索外部新闻、生态资料、KOL 讨论、同叙事案例和镜像页面。
 
 建议配置 `TAVILY_API_KEY`、`BRAVE_API_KEY` 或 `SERPAPI_KEY`，否则外部搜索会比较慢。
+
+### Grok 模式
+
+如果你配置了 `XAI_API_KEY`，可以运行：
+
+```bash
+npm run base:grok -- 0xTokenAddress --website https://example.xyz --twitter https://x.com/project --github https://github.com/project/repo --market-cap "$1.2M"
+```
+
+这个模式会让 Grok 调用 Web Search 和 X Search，按照更接近人工投研的结构判断：产品形态、机制类型、是否有飞轮、机制不可替代性、团队和 dev 背景、历史风险、是否有知名实体互动，以及结合当前市值后的最终评分和未来预期。
+
+它适合已经通过第一轮筛查、值得认真研究的项目。日常快速判断仍然建议先用 Auto 或 Quick。
 
 ## 7. 结论等级怎么理解
 

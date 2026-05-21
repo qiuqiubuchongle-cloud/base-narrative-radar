@@ -10,7 +10,8 @@
     "base:dd:auto": "BASE_DD_CONFIG=config/base_token_due_diligence.config.json BASE_DD_OUT_DIR=data/reports BASE_DISCOVER_OUT_DIR=data/discovery node scripts/base_token_due_diligence.mjs --auto-discover",
     "base:dd:quick": "BASE_DD_CONFIG=config/base_token_due_diligence.config.json BASE_DD_OUT_DIR=data/reports node scripts/base_token_due_diligence.mjs --quick",
     "base:dd:deep": "BASE_DD_CONFIG=config/base_token_due_diligence.config.json BASE_DD_OUT_DIR=data/reports node scripts/base_token_due_diligence.mjs --deep",
-    "test": "node --check scripts/base_token_due_diligence.mjs && node --check scripts/base_project_discover.mjs"
+    "base:grok": "BASE_DISCOVER_OUT_DIR=data/discovery BASE_XAI_OUT_DIR=data/xai-research node scripts/base_xai_research.mjs",
+    "test": "node --check scripts/base_token_due_diligence.mjs && node --check scripts/base_project_discover.mjs && node --check scripts/base_xai_research.mjs"
   },
   "keywords": [
     "base",
@@ -21,7 +22,9 @@
     "github",
     "token",
     "narrative",
-    "due-diligence"
+    "due-diligence",
+    "grok",
+    "xai"
   ],
   "license": "MIT"
 }
