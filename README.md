@@ -5,6 +5,67 @@
 
 ![Base 叙事雷达工作流](./assets/base-radar-flow.svg)
 
+## 一句话安装
+
+```bash
+git clone https://github.com/qiuqiubuchongle-cloud/base-narrative-radar.git && cd base-narrative-radar && npm test
+```
+
+完整能力需要先安装并登录 OKX OnchainOS CLI：
+
+```bash
+npx skills add okx/onchainos-skills --yes --global
+onchainos wallet status
+```
+
+如果 `onchainos wallet status` 能正常返回，说明链上数据能力可用。没有 OnchainOS 时，`base:discover` 仍可用 DEX Screener / GitHub 做部分发现，但 `base:dd:auto` 的 OKX 风险、creator、protocol、holder 等链上证据会缺失。
+
+## Agent 快速使用
+
+最推荐的入口是一条命令：
+
+```bash
+npm run base:dd:auto -- 0xTokenAddress
+```
+
+它会自动完成：
+
+```text
+CA → 发现官网/X/GitHub/Docs → 读取链上数据 → 检查官网真实性 → 检查 GitHub → 输出纯文字尽调报告
+```
+
+如果你已经知道官网、X 或 GitHub，可以手动补充：
+
+```bash
+npm run base:dd:quick -- 0xTokenAddress \
+  --website https://example.xyz \
+  --twitter https://x.com/project \
+  --github https://github.com/project/repo
+```
+
+准备写长内容或深挖同叙事时再用：
+
+```bash
+npm run base:dd:deep -- 0xTokenAddress --notes "把项目文案、推文、dev 说法贴这里"
+```
+
+## 依赖说明
+
+| 依赖 | 是否必须 | 用途 |
+|---|---:|---|
+| Node.js 18+ | 必须 | 运行脚本 |
+| OKX OnchainOS CLI | 完整报告必须 | token report、风险扫描、creator/protocol、链上价格与流动性 |
+| DEX Screener 公共接口 | 自动使用 | 挖官网、X、GitHub、Docs、市值、流动性 |
+| GitHub 公共接口 | 自动使用 | 搜索同名 repo、检查显式 GitHub 线索 |
+| Basescan / Etherscan API Key | 可选 | 独立验证合约创建者 |
+| Tavily / Brave / SerpAPI | 可选 | Deep 模式搜索新闻、生态资料、同叙事案例 |
+
+可选环境变量：
+
+```bash
+cp .env.example .env
+```
+
 ## 它是干啥的？
 
 Base 叙事雷达是一个面向 Base 链产品型 token 的快速尽调工具。
@@ -133,6 +194,23 @@ Base 上很多风险不是传统土狗式 rug，而是“产品式包装”。
 
 ## Quick / Deep 两种模式
 
+### Auto：只给 CA，自动发现再尽调
+
+日常最推荐用 Auto。
+
+```bash
+npm run base:dd:auto -- 0xTokenAddress
+```
+
+Auto 会先从 4 类数据源挖信息，再把发现结果喂给尽调：
+
+| 数据源 | 能挖到什么 |
+|---|---|
+| DEX Screener | 官网、X/Twitter、GitHub、Telegram、Discord、市值、流动性、价格 |
+| OKX OnchainOS | token 名称、symbol、风险、creator、protocol、链上基础信息 |
+| Basescan / Etherscan V2 | 合约创建者、创建交易；需要 API key |
+| GitHub Search | 同名仓库候选、组织下 repo 候选 |
+
 ### Quick：先给能不能看的结论
 
 日常丢 CA 建议先跑 Quick。
@@ -225,26 +303,6 @@ data/reports/<ca>.txt
 
 `watch` 只是“值得继续观察”，不是“可以买”。
 
-## 安装
-
-要求：
-
-- Node.js 18+
-- 已安装并配置 `onchainos` CLI
-- 可选：搜索 API key，用于 deep 模式
-
-```bash
-git clone https://github.com/qiuqiubuchongle-cloud/base-narrative-radar.git
-cd base-narrative-radar
-npm test
-```
-
-可选环境变量：
-
-```bash
-cp .env.example .env
-```
-
 ## 项目结构
 
 ```text
@@ -259,6 +317,7 @@ base-narrative-radar/
 ├── references/
 │   └── base-narrative-rubric.md
 ├── scripts/
+│   ├── base_project_discover.mjs
 │   └── base_token_due_diligence.mjs
 ├── config/
 │   └── base_token_due_diligence.config.json
@@ -291,4 +350,3 @@ base-narrative-radar/
 ## License
 
 MIT
-

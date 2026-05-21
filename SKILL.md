@@ -78,6 +78,16 @@ For deep mode, add:
 
 Examples:
 
+Install / verify:
+
+```bash
+git clone https://github.com/qiuqiubuchongle-cloud/base-narrative-radar.git && cd base-narrative-radar && npm test
+npx skills add okx/onchainos-skills --yes --global
+onchainos wallet status
+```
+
+OnchainOS CLI is required for the full due-diligence report. Without it, `base:discover` can still find DEX Screener and GitHub metadata, but OKX token report, risk, creator, and protocol evidence will be missing.
+
 ```bash
 npm run base:dd:auto -- \
   0xd510829f654e102a57c4f6d9bb6879b7cc2ccb07
