@@ -1,0 +1,149 @@
+{
+  "version": "0.1.0",
+  "purpose": "Evidence-first reference library for Base agent/product tokens. These are patterns and comparison anchors, not investment recommendations.",
+  "caseTypes": {
+    "real_build": "Website and GitHub show a usable product path, maintained repo, docs, SDK/API or app evidence.",
+    "promising_but_unproven": "Narrative and links exist, but product usage or repo proof is incomplete.",
+    "front_end_shell": "Polished website exists, but demo is simulated or static and GitHub/backend proof is weak.",
+    "repo_mismatch": "GitHub found by search only, or repo does not match the token/product claim.",
+    "short_lived_launch": "Launchpad/social token with weak product surface; may trade, but evidence does not support a product claim."
+  },
+  "evidenceSignals": {
+    "strongWebsite": [
+      "live app route, dashboard, login, wallet action, or real user flow",
+      "docs that point to concrete contracts, SDK functions, API endpoints, changelog, or deployment addresses",
+      "backend/API calls visible in frontend or public docs",
+      "clear product screenshots or demo tied to real state, not only a landing page",
+      "official links are internally consistent across website, X, docs, and GitHub"
+    ],
+    "weakWebsite": [
+      "simulated demo or teaser explicitly says it is not live",
+      "only landing page sections with generic AI/agent/workflow words",
+      "footer links, terms, docs, GitHub, or social links are missing, dead, or template-like",
+      "no API/form/auth/dashboard/connect-wallet/app route evidence",
+      "claimed products are mostly 'building', 'coming soon', or roadmap"
+    ],
+    "strongGithub": [
+      "website or official X explicitly links the repo/org",
+      "repo has recent commits, real code structure, README, docs, examples, package files, tests, issues, or releases",
+      "repo names align with the product surface, for example app, contracts, sdk, docs, indexer, mcp",
+      "contracts or SDK addresses match the token/site claims",
+      "multiple repos in the org tell a coherent product story"
+    ],
+    "weakGithub": [
+      "GitHub URL returns 404, private, deleted, or empty",
+      "repo is only a same-name search result and not linked by official sources",
+      "repo has only generated boilerplate, no meaningful commits, or stale last push",
+      "repo content does not match the token/project narrative",
+      "no contracts, app, SDK, docs, examples, or deployment references"
+    ]
+  },
+  "comparisonCases": [
+    {
+      "name": "Gitbank",
+      "category": "Developer Tool",
+      "caseType": "real_build",
+      "baseLaunchContext": "Base product/devtool token with website, docs, X and GitHub org discoverable from token metadata.",
+      "websiteEvidence": [
+        "project website and docs discoverable from DEX Screener",
+        "site describes a concrete GitHub-linked product surface",
+        "frontend exposes app/API-like signals"
+      ],
+      "githubEvidence": [
+        "official GitHub org is discoverable",
+        "related repos such as CLI, SDK, app, contracts, playground form a coherent product map",
+        "recent updates support an active builder story"
+      ],
+      "watchFor": [
+        "whether real users adopt the product beyond launch attention",
+        "whether contracts and docs remain consistent with the token story"
+      ],
+      "heuristic": "Use as a positive comparison for devtool tokens: official org + multiple coherent repos + docs/app beats pure narrative wording."
+    },
+    {
+      "name": "Tessera",
+      "category": "AI Agent / Finance Tool",
+      "caseType": "front_end_shell",
+      "baseLaunchContext": "AI agent credit/USDC line narrative with polished website and X link, but weak public repo proof at inspection time.",
+      "websiteEvidence": [
+        "polished website with Products, Docs, Demo, SDK routes",
+        "demo language indicates simulated/demo-only flow",
+        "many roadmap/building claims but limited proof of live credit usage"
+      ],
+      "githubEvidence": [
+        "official site referenced a GitHub path that was inaccessible/404 at inspection time",
+        "same-name GitHub search results should not be treated as official"
+      ],
+      "watchFor": [
+        "repo becomes public and matches contracts/SDK claims",
+        "real draw/repay/settlement events appear and are linked from docs",
+        "official X demonstrates product usage instead of only narrative"
+      ],
+      "heuristic": "Use as a warning comparison: a strong Base-native story plus good design is not enough without repo/backend/onchain usage proof."
+    },
+    {
+      "name": "Clanker-style social launches",
+      "category": "Farcaster / Social Asset",
+      "caseType": "short_lived_launch",
+      "baseLaunchContext": "Tokens launched from social/farcaster flow may have momentum without a product.",
+      "websiteEvidence": [
+        "often no dedicated website or only launchpad/social page",
+        "project-specific docs are usually absent"
+      ],
+      "githubEvidence": [
+        "usually no official repo; same-name search should be ignored unless official account links it"
+      ],
+      "watchFor": [
+        "who launched it",
+        "whether original dev or related builder recognizes it",
+        "whether the story survives beyond first-day social flow"
+      ],
+      "heuristic": "Do not penalize every Clanker token for lacking GitHub, but do not call it a product token without product evidence."
+    },
+    {
+      "name": "Virtuals-style agent launches",
+      "category": "AI Agent",
+      "caseType": "promising_but_unproven",
+      "baseLaunchContext": "Agent tokens may have richer pages but still need API/demo/revenue evidence.",
+      "websiteEvidence": [
+        "look for runnable demo, API connection, agent logs, revenue/use cases, team or ecosystem integrations",
+        "generic agent biography is weak evidence"
+      ],
+      "githubEvidence": [
+        "repo is a strong plus only when it contains agent code, integrations, evals, API server, or SDK usage",
+        "no repo is acceptable for some closed teams, but then product usage evidence must be stronger"
+      ],
+      "watchFor": [
+        "actual agent behavior, not just a character page",
+        "API calls, integrations, autonomous actions, or paying users"
+      ],
+      "heuristic": "For AI agent tokens, demand behavioral proof: demo/API/logs/revenue matter more than agent lore."
+    },
+    {
+      "name": "Flaunch / Zora creator mechanisms",
+      "category": "Creator Economy",
+      "caseType": "promising_but_unproven",
+      "baseLaunchContext": "Creator/mechanism tokens should be judged by whether the mechanism creates demand, not by devtool standards.",
+      "websiteEvidence": [
+        "look for creator fee mechanics, hooks, content distribution, redemption, or user flow",
+        "landing pages with mechanism buzzwords but no usage path are weak"
+      ],
+      "githubEvidence": [
+        "public contracts/hooks/docs strengthen the case",
+        "same-name repo search is weak unless linked by official pages"
+      ],
+      "watchFor": [
+        "whether creator/community actually uses the mechanism",
+        "whether fee/reward logic is transparent"
+      ],
+      "heuristic": "For mechanism tokens, the product evidence is the working mechanism and usage loop, not the beauty of the site."
+    }
+  ],
+  "reportingRules": [
+    "Lead with product evidence grade before narrative score.",
+    "Treat official website-linked GitHub as strong; same-name GitHub search as weak.",
+    "Call out simulated demos, dead GitHub links, template footers, and missing backend signals in plain language.",
+    "Compare the project to the closest case type: real_build, front_end_shell, repo_mismatch, short_lived_launch, or promising_but_unproven.",
+    "Do not turn a hot narrative into a high product judgment without website/GitHub/app evidence."
+  ]
+}

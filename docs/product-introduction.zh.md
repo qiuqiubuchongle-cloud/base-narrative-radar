@@ -6,7 +6,7 @@
 
 Base 叙事雷达是一个快速判断 Base 链产品型 token 的尽调 Skill。
 
-你可以喂给它 CA、官网、GitHub、X/Twitter，甚至只是一段项目文案，它会自动整理链上基础、官网真实性、GitHub 证据、X 认领线索、叙事类型和产品式 rug 风险，最后给出 `strong_watch / watch / weak_watch / avoid` 的客观初判。
+你可以喂给它 CA、官网、GitHub、X/Twitter，甚至只是一段项目文案，它会自动整理链上基础、官网产品证据、GitHub 证据、X 认领线索和产品式 rug 风险，最后给出 `strong_watch / watch / weak_watch / avoid` 的客观初判。
 
 说人话就是：它不帮你冲，它先帮你判断这个项目值不值得继续查。
 
@@ -59,7 +59,7 @@ Base 现在不是纯 meme 玩法，越来越多机会披着“产品”的外衣
 - 🧪 demo 可以只是一个 teaser；
 - 📣 X 上一句“full MVP live”就足够让市场脑补。
 
-所以 Base 叙事雷达要做的不是预测涨跌，而是把“真假难辨”先拆成证据模块。
+所以 Base 叙事雷达要做的不是预测涨跌，也不是给叙事打高分，而是把“真假难辨”先拆成证据模块：官网到底有没有产品，GitHub 到底是不是官方，repo 到底有没有真实代码结构。
 
 ## 4. 它能分析哪些输入
 
@@ -90,23 +90,43 @@ Base 现在不是纯 meme 玩法，越来越多机会披着“产品”的外衣
 
 不同平台有不同判断方式。Clanker 更看 dev 认领和社交流动，Virtuals 更看 Agent 是否有 API、demo、收入和生态使用，Zora 更看内容/creator 逻辑，Flaunch 更看机制能否产生真实需求。
 
-### 官网真实性
+### 官网产品证据
 
 不是官网越漂亮越真。
 
-它会检查官网是否可访问、正文是否足够、有没有 API/form/auth/dashboard/connect wallet 等应用线索，是否只是模板壳、coming soon 或发射台通用页面。
+它会检查官网是否可访问、正文是否足够、有没有 API/form/auth/dashboard/connect wallet/app route 等应用线索，demo 是真实状态还是 simulated / teaser，是否只是模板壳、coming soon 或发射台通用页面。
 
-### GitHub 证据
+### GitHub 产品证据
 
 它会区分：
 
 - 官网或 X 明确链接到 GitHub；
 - GitHub 近期有更新；
+- repo 是否包含 app / contracts / sdk / cli / docs / API / server / playground 等产品组件；
+- 同一个 GitHub owner 下是否形成完整产品地图；
 - repo 名称和项目叙事匹配；
 - 只是同名搜索结果；
 - repo 过期、归档或明显不相关。
 
 同名 GitHub 只能算弱证据，显式关联才是强证据。
+
+### Base Agent 案例库
+
+这次新增了一个证据优先的案例库：
+
+```text
+references/base-agent-evidence-cases.json
+```
+
+它会把项目粗分为：
+
+- `real_build`：官网和 GitHub 都能支撑真实产品；
+- `front_end_shell`：网站漂亮，但 demo/static/前端壳明显；
+- `repo_mismatch`：GitHub 同名撞车、404、私有或不匹配；
+- `short_lived_launch`：发射台/社交资产，有热度但产品证据弱；
+- `promising_but_unproven`：有一些证据，但产品闭环还没证明。
+
+以后报告会更像这样判断：这个项目更接近 Gitbank 这种 build 证据，还是 Tessera 这种前端壳/证据断层。
 
 ### X / Twitter 证据
 

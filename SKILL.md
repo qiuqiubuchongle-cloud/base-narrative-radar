@@ -11,12 +11,12 @@ metadata:
 
 # Base 叙事雷达
 
-Base 叙事雷达用于判断 Base 链产品型 token：输入 CA，自动挖官网/X/GitHub/Docs，再快速看懂它是谁、从哪里发射、讲什么故事、官网/GitHub/X 像不像真东西，以及是否值得继续放入 watchlist。
+Base 叙事雷达用于判断 Base 链产品型 token：输入 CA，自动挖官网/X/GitHub/Docs，再优先判断官网和 GitHub 的产品证据是否成立，最后再把叙事作为参考。
 
 Use this skill for:
-- Base CA 初判、Base token 叙事分析、Clanker/Virtuals/Zora/Flaunch 项目判断
+- Base CA 初判、Base token 产品证据分析、Clanker/Virtuals/Zora/Flaunch 项目判断
 - 只给 CA 时自动发现官网、X/Twitter、GitHub、Docs、Telegram、DEX Screener 链接
-- 官网真实性、GitHub 活跃度、X/Twitter 认领、dev 是否在 build
+- 官网真实性、GitHub 活跃度、X/Twitter 认领、dev 是否在 build；重点是产品证据，不是叙事打分
 - 配置 X/Twitter API 后检索官方认领、传播质量、KOL 互动和同名噪音
 - 产品式 rug 风险：有官网/白皮书/GitHub/demo，但产品可能只是包装
 - 同叙事新闻/生态资料检索，只在用户要求深挖时运行
@@ -29,6 +29,7 @@ Do not use it for:
 ## Product Lens
 
 Base 不按纯土狗链理解。重点看：
+- **产品证据**：官网是否有真实应用路径、API/form/auth/dashboard/app route；GitHub 是否官方显式关联、近期更新、repo 结构能支撑产品。
 - **出生地**：Clanker / Virtuals / Zora / Flaunch / Base App / Unknown
 - **产品叙事**：AI Agent、Developer Tool、Workflow、Farcaster/Social、Creator Economy、Trading/Finance、Infra/Data
 - **真实性**：官网是否可用、有无后端/表单/API/登录痕迹；GitHub 是否显式关联、最近更新；X 是否认领 token
@@ -59,13 +60,14 @@ For quick mode, answer in this compact format:
 ```text
 {Token}｜Base {Launchpad/Narrative}
 
-一句话：{plain-language narrative}
+一句话：{product evidence first, narrative second}
 
 基础数据：市值 / 流动性 / 持有人 / 风险
-产品证据：官网 / X / GitHub
-叙事价值评分：xx/100
+产品证据等级：strong_product_evidence | credible_but_incomplete | front_end_shell_or_unproven | weak_product_evidence
+官网证据：真实应用 / 前端壳 / 模板页 / 不可访问
+GitHub 证据：官方 repo / 同名搜索 / 404 或缺失
 初判：strong_watch | watch | weak_watch | avoid
-我怎么看：2-4 句，重点说为什么值得/不值得继续看。
+我怎么看：2-4 句，重点说官网和 GitHub 是否支撑真实产品。
 ```
 
 For deep mode, add:
@@ -74,6 +76,17 @@ For deep mode, add:
 - 同类案例
 - 缺失证据
 - 产品式 rug 风险
+
+## Evidence Case Library
+
+When explaining why a project looks real or fake, use `references/base-agent-evidence-cases.json` as the comparison library. Load it only when you need case analogies or want to update product-evidence rules.
+
+Case types:
+- `real_build`: website + GitHub support a usable product.
+- `front_end_shell`: polished site, simulated/static demo, weak GitHub/backend proof.
+- `repo_mismatch`: same-name GitHub or dead official repo.
+- `short_lived_launch`: launchpad/social token with weak product surface.
+- `promising_but_unproven`: some evidence exists, but product loop is not proven.
 
 ## Commands
 

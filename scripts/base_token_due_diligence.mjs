@@ -4,9 +4,11 @@ import { discoverProject } from "./base_project_discover.mjs";
 
 const CONFIG_PATH = process.env.BASE_DD_CONFIG || "data/base_token_due_diligence.config.json";
 const OUT_DIR = process.env.BASE_DD_OUT_DIR || "data/base_token_due_diligence";
+const EVIDENCE_CASES_PATH = process.env.BASE_AGENT_CASES || "references/base-agent-evidence-cases.json";
 const USER_AGENT = "Mozilla/5.0 (compatible; BaseTokenDueDiligence/0.1)";
 
 const config = loadJson(CONFIG_PATH, {});
+const evidenceCases = loadJson(EVIDENCE_CASES_PATH, {});
 const chain = config.chain || "base";
 const chainIndex = String(config.chainIndex || "8453");
 fs.mkdirSync(OUT_DIR, { recursive: true });
@@ -235,12 +237,21 @@ function websiteBackendSignals(html) {
   ]).slice(0, 20);
   const forms = (html.match(/<form\b/gi) || []).length;
   const authHints = (html.match(/login|sign in|auth|dashboard|app\.|connect wallet|walletconnect/gi) || []).length;
+  const appRouteHints = uniq([
+    ...[...html.matchAll(/href=["']([^"']*(?:\/app|\/dashboard|\/demo|\/playground|\/docs|\/api|\/sdk)[^"']*)["']/gi)].map((m) => m[1]),
+    ...[...html.matchAll(/["']([^"']*(?:\/app|\/dashboard|\/demo|\/playground|\/docs|\/api|\/sdk)[^"']*)["']/gi)].map((m) => m[1])
+  ]).slice(0, 20);
   const staticHints = (html.match(/vercel|netlify|github pages|cloudflare pages|next-static|vite/gi) || []).length;
+  const simulatedHints = (html.match(/simulated|simulation|teaser|playground|coming soon|in development|building|roadmap|waitlist/gi) || []).length;
+  const templateHints = (html.match(/lorem ipsum|template|placeholder|all rights reserved|privacy policy|terms of service/gi) || []).length;
   return {
     apiHits,
     forms,
     authHints,
+    appRouteHints,
     staticHints,
+    simulatedHints,
+    templateHints,
     hasBackendEvidence: apiHits.length > 0 || forms > 0 || authHints >= 3
   };
 }
@@ -304,6 +315,47 @@ function scoreWebsite({ res, meta, backend, role }) {
     reasons.push("~ launchpad token page, useful but weaker than project-owned website");
   }
   return { score: clamp(score, 0, 100), reasons };
+}
+
+function extractWebsiteEvidence(website) {
+  if (!website?.ok) {
+    return {
+      grade: "missing",
+      score: 0,
+      positives: [],
+      negatives: ["官网不可访问或未发现"],
+      read: "没有可验证官网，产品证据从一开始就偏弱。"
+    };
+  }
+  const text = `${website.title || ""} ${website.description || ""} ${website.visibleText || ""}`;
+  const positives = [];
+  const negatives = [];
+  if (website.textLength >= Number(config.thresholds?.minWebsiteTextLength || 800)) positives.push("官网内容量足够，不是极薄单页");
+  else negatives.push("官网正文偏薄");
+  if (website.backend?.apiHits?.length) positives.push(`发现 ${website.backend.apiHits.length} 个 API/fetch 线索`);
+  if (website.backend?.forms) positives.push(`发现 ${website.backend.forms} 个表单`);
+  if (website.backend?.authHints >= 3) positives.push("出现 dashboard/auth/app/connect wallet 等应用词");
+  if (website.backend?.appRouteHints?.length) positives.push(`发现产品路由：${website.backend.appRouteHints.slice(0, 5).join(", ")}`);
+  if (/docs|sdk|api|contract|github|changelog|release|mcp|subgraph|indexer/i.test(text)) positives.push("出现 docs/sdk/api/contract 等工程化线索");
+  if (/demo|playground/i.test(text)) positives.push("存在 demo/playground 表层线索");
+  if (!website.backend?.hasBackendEvidence) negatives.push("未发现明确后端/API/表单/auth 证据");
+  if (website.backend?.simulatedHints) negatives.push(`出现 ${website.backend.simulatedHints} 个 simulated/teaser/building/roadmap 类弱交付词`);
+  if (website.backend?.templateHints) negatives.push(`出现 ${website.backend.templateHints} 个模板/通用页脚类词`);
+  if (website.role === "launchpad_generic_site") negatives.push("链接是发射台通用页，不是项目自有官网");
+  if (website.role === "launchpad_token_page") negatives.push("链接是发射台项目页，弱于项目自有官网");
+  let score = 20;
+  score += Math.min(positives.length, 6) * 10;
+  score -= Math.min(negatives.length, 5) * 8;
+  if (website.backend?.hasBackendEvidence) score += 18;
+  if (website.backend?.simulatedHints >= 2 && !website.backend?.hasBackendEvidence) score -= 15;
+  const grade = score >= 75 ? "strong_product_site" : score >= 55 ? "usable_site_evidence" : score >= 35 ? "front_end_or_marketing_site" : "weak_or_template_site";
+  return {
+    grade,
+    score: clamp(score, 0, 100),
+    positives: uniq(positives),
+    negatives: uniq(negatives),
+    read: websiteEvidenceRead(grade)
+  };
 }
 
 function parseGithubRepoUrl(url) {
@@ -817,6 +869,123 @@ function scoreGithub(repos, token) {
   return { score: clamp(score, 0, 100), reasons };
 }
 
+function extractGithubEvidence(github) {
+  const repos = github?.repos || [];
+  if (!repos.length) {
+    return {
+      grade: "missing",
+      score: 0,
+      positives: [],
+      negatives: ["未发现可用 GitHub 仓库证据"],
+      read: "没有 GitHub 证据，不能用 builder/devtool 叙事给项目加分。"
+    };
+  }
+  const positives = [];
+  const negatives = [];
+  const explicitRepos = repos.filter((repo) => repo.explicit);
+  const recentRepos = repos.filter((repo) => {
+    const pushedDays = repo.pushed_at ? (Date.now() - new Date(repo.pushed_at).getTime()) / 86_400_000 : Infinity;
+    return pushedDays <= Number(config.thresholds?.githubRecentPushDays || 45);
+  });
+  const productRepoNames = repos.filter((repo) => /app|contract|sdk|cli|docs|api|mcp|indexer|subgraph|agent|server|playground/i.test(repo.full_name || ""));
+  if (explicitRepos.length) positives.push(`${explicitRepos.length} 个仓库由官网/元数据显式关联`);
+  else negatives.push("GitHub 只是同名搜索结果，不是官方显式链接");
+  if (recentRepos.length) positives.push(`${recentRepos.length} 个仓库近期有更新`);
+  else negatives.push("未看到近期更新仓库");
+  if (productRepoNames.length) positives.push(`仓库名包含产品组件：${productRepoNames.slice(0, 5).map((r) => r.full_name).join(", ")}`);
+  else negatives.push("仓库名缺少 app/contracts/sdk/docs/API 等产品组件线索");
+  if (repos.some((repo) => (repo.stargazers_count || 0) >= 10)) positives.push("存在有一定 star 的仓库");
+  if (repos.some((repo) => repo.archived)) negatives.push("存在 archived 仓库");
+  const ownerGroups = repos.reduce((acc, repo) => {
+    const owner = String(repo.full_name || "").split("/")[0];
+    if (owner) acc[owner] = (acc[owner] || 0) + 1;
+    return acc;
+  }, {});
+  const coherentOwner = Object.entries(ownerGroups).sort((a, b) => b[1] - a[1])[0];
+  if (coherentOwner?.[1] >= 3) positives.push(`同一 GitHub owner 下有 ${coherentOwner[1]} 个相关仓库`);
+  let score = 15;
+  score += Math.min(positives.length, 6) * 12;
+  score -= Math.min(negatives.length, 5) * 10;
+  if (explicitRepos.length) score += 18;
+  if (recentRepos.length >= 2) score += 12;
+  if (productRepoNames.length >= 2) score += 12;
+  const grade = score >= 75 ? "strong_builder_repo" : score >= 55 ? "credible_repo_evidence" : score >= 35 ? "weak_or_partial_repo" : "missing_or_mismatch_repo";
+  return {
+    grade,
+    score: clamp(score, 0, 100),
+    positives: uniq(positives),
+    negatives: uniq(negatives),
+    read: githubEvidenceRead(grade)
+  };
+}
+
+function productEvidenceRead(grade) {
+  if (grade === "strong_product_evidence") return "官网和 GitHub 都能支撑真实产品判断，优先看后续用户/收入/链上使用。";
+  if (grade === "credible_but_incomplete") return "有一定产品证据，但还缺少更硬的使用闭环或官方持续更新。";
+  if (grade === "front_end_shell_or_unproven") return "更像前端展示或早期包装，不能仅凭官网叙事判断为真实产品。";
+  return "产品证据明显不足，当前更应按包装/噪音处理。";
+}
+
+function websiteEvidenceRead(grade) {
+  if (grade === "strong_product_site") return "官网有较强应用/工程化证据，不只是展示页。";
+  if (grade === "usable_site_evidence") return "官网有一定产品线索，但还需要 GitHub 或真实使用补强。";
+  if (grade === "front_end_or_marketing_site") return "官网更像前端/营销页，产品闭环证据不足。";
+  return "官网证据很弱，可能只是模板壳或发射台页面。";
+}
+
+function githubEvidenceRead(grade) {
+  if (grade === "strong_builder_repo") return "GitHub 能较强支撑 builder/product 叙事。";
+  if (grade === "credible_repo_evidence") return "GitHub 有可信线索，但还需要看代码内容和真实使用。";
+  if (grade === "weak_or_partial_repo") return "GitHub 证据偏弱或不完整，不能单独支撑项目真实性。";
+  return "GitHub 缺失、错配或不可用，是产品判断硬伤。";
+}
+
+function compareEvidenceCase({ websiteEvidence, githubEvidence, launchpad, narrative }) {
+  const cases = evidenceCases.comparisonCases || [];
+  let caseType = "promising_but_unproven";
+  if (websiteEvidence.grade === "strong_product_site" && ["strong_builder_repo", "credible_repo_evidence"].includes(githubEvidence.grade)) {
+    caseType = "real_build";
+  } else if (["strong_builder_repo", "credible_repo_evidence"].includes(githubEvidence.grade) && websiteEvidence.score >= 35) {
+    caseType = "real_build";
+  } else if (["front_end_or_marketing_site", "weak_or_template_site"].includes(websiteEvidence.grade) && ["missing", "missing_or_mismatch_repo", "weak_or_partial_repo"].includes(githubEvidence.grade)) {
+    caseType = "front_end_shell";
+  } else if (githubEvidence.grade === "missing_or_mismatch_repo") {
+    caseType = "repo_mismatch";
+  } else if (/clanker|zora|flaunch/i.test(launchpad.platform || "") && githubEvidence.grade === "missing") {
+    caseType = "short_lived_launch";
+  }
+  const launchpadName = String(launchpad.platform || "").toLowerCase();
+  const realBuild = caseType === "real_build" ? cases.find((row) => row.caseType === "real_build") : null;
+  const matched = cases.find((row) => row.caseType === caseType && (
+    String(row.name || "").toLowerCase().includes(launchpadName)
+  )) || cases.find((row) => row.caseType === caseType) || null;
+  const finalMatch = realBuild || matched;
+  return {
+    caseType,
+    caseName: finalMatch?.name || "",
+    heuristic: finalMatch?.heuristic || "",
+    watchFor: finalMatch?.watchFor || [],
+    read: finalMatch
+      ? `更接近案例库里的 ${finalMatch.name} / ${caseType}：${finalMatch.heuristic}`
+      : `更接近 ${caseType} 类型，需要继续补官网/GitHub/真实使用证据。`
+  };
+}
+
+function buildProductEvidence({ website, github, launchpad, narrative }) {
+  const websiteEvidence = extractWebsiteEvidence(website);
+  const githubEvidence = extractGithubEvidence(github);
+  const score = clamp(websiteEvidence.score * 0.35 + githubEvidence.score * 0.55 + (website.ok && github.repos?.length ? 10 : 0), 0, 100);
+  const grade = score >= 75 ? "strong_product_evidence" : score >= 55 ? "credible_but_incomplete" : score >= 35 ? "front_end_shell_or_unproven" : "weak_product_evidence";
+  return {
+    grade,
+    score,
+    read: productEvidenceRead(grade),
+    website: websiteEvidence,
+    github: githubEvidence,
+    comparison: compareEvidenceCase({ websiteEvidence, githubEvidence, launchpad, narrative })
+  };
+}
+
 function scoreOnchain({ priceInfo, security, advanced, liquidity }) {
   let score = 50;
   const reasons = [];
@@ -903,9 +1072,21 @@ function buildModuleSummary(report) {
       status: report.launchpad.platform === "Unknown" ? "unknown" : "detected",
       evidence: [report.launchpad.platform, ...(report.launchpad.matches || []).flatMap((m) => m.hits || [])]
     },
+    product_evidence: {
+      status: report.productEvidence.grade,
+      evidence: [
+        report.productEvidence.read,
+        `comparison=${report.productEvidence.comparison.caseName || report.productEvidence.comparison.caseType}`,
+        report.productEvidence.comparison.heuristic
+      ].filter(Boolean)
+    },
     website_reality: {
-      status: report.checks.website.ok ? (report.checks.website.backend?.hasBackendEvidence ? "app_signal" : "thin_or_static") : "missing",
-      evidence: report.scores.website.reasons
+      status: report.productEvidence.website.grade,
+      evidence: [
+        report.productEvidence.website.read,
+        ...report.productEvidence.website.positives,
+        ...report.productEvidence.website.negatives
+      ]
     },
     twitter_reality: {
       status: report.twitterEvidence.status,
@@ -916,8 +1097,12 @@ function buildModuleSummary(report) {
       ]
     },
     github_reality: {
-      status: report.checks.github.repos.some((r) => r.explicit) ? "explicit" : report.checks.github.repos.length ? "name_search_only" : "missing",
-      evidence: report.scores.github.reasons
+      status: report.productEvidence.github.grade,
+      evidence: [
+        report.productEvidence.github.read,
+        ...report.productEvidence.github.positives,
+        ...report.productEvidence.github.negatives
+      ]
     },
     narrative_value: {
       status: report.narrative.primary === "Unknown" ? "unclear" : "detected",
@@ -992,6 +1177,7 @@ async function analyzeToken(tokenAddress, opts = {}) {
   const github = await analyzeGithub({ urls: githubUrls, token });
   const launchpad = detectLaunchpad({ token, urls: allUrls, liquidity: liquidityRes.data, advanced: report.advanced });
   const narrative = classifyNarrative({ token, website, github, userNotes: opts.notes });
+  const productEvidence = buildProductEvidence({ website, github, launchpad, narrative });
   const isDeep = opts.mode === "deep";
   const externalSignals = isDeep
     ? await analyzeExternalSignals({ token, urls: { ...urls, github: githubUrls }, userNotes: opts.notes })
@@ -1010,9 +1196,8 @@ async function analyzeToken(tokenAddress, opts = {}) {
   });
   const narrativeScore = scoreNarrative({ narrative, launchpad, website, github });
   const finalScore = clamp(
-    onchainScore.score * 0.35 +
-    (website.score?.score || 0) * 0.2 +
-    github.score.score * 0.2 +
+    onchainScore.score * 0.3 +
+    productEvidence.score * 0.45 +
     narrativeScore.score * 0.2 +
     externalSignals.score * 0.05,
     0,
@@ -1032,6 +1217,7 @@ async function analyzeToken(tokenAddress, opts = {}) {
     },
     launchpad,
     narrative,
+    productEvidence,
     twitterEvidence,
     externalSignals,
     conceptNews,
@@ -1064,6 +1250,8 @@ function formatTextReport(report) {
   lines.push(`模式：${report.userInputs?.mode || "quick"}`);
   lines.push(`初判：${report.verdict}`);
   lines.push(`综合评分：${report.finalScore}/100`);
+  lines.push(`产品证据等级：${report.productEvidence.grade}`);
+  lines.push(`产品证据评分：${report.productEvidence.score}/100`);
   lines.push(`叙事类型：${report.narrative.primary}`);
   lines.push(`叙事价值评分：${report.scores.narrative.score}/100`);
   lines.push(`发射平台：${report.launchpad.platform}`);
@@ -1072,15 +1260,19 @@ function formatTextReport(report) {
   lines.push(`一句话判断`);
   lines.push(oneLineRead(report));
   lines.push("");
-  lines.push(`叙事价值`);
-  lines.push(narrativeValueRead(report));
-  for (const reason of report.scores.narrative.reasons || []) lines.push(`- ${stripMarker(reason)}`);
+  lines.push(`产品证据判断`);
+  lines.push(report.productEvidence.read);
+  lines.push(`案例对照：${report.productEvidence.comparison.read}`);
+  if (report.productEvidence.comparison.watchFor?.length) {
+    lines.push(`后续重点确认：${report.productEvidence.comparison.watchFor.join("；")}`);
+  }
   lines.push("");
   lines.push(`核心评分`);
   lines.push(`链上基础：${report.scores.onchain.score}/100`);
-  lines.push(`官网真实性：${report.scores.website.score}/100`);
-  lines.push(`GitHub 证据：${report.scores.github.score}/100`);
-  lines.push(`叙事价值：${report.scores.narrative.score}/100`);
+  lines.push(`产品证据：${report.productEvidence.score}/100`);
+  lines.push(`官网证据：${report.productEvidence.website.score}/100`);
+  lines.push(`GitHub 证据：${report.productEvidence.github.score}/100`);
+  lines.push(`叙事参考：${report.scores.narrative.score}/100`);
   lines.push("");
   lines.push(`官网`);
   lines.push(`URL：${report.urls.website || "暂无"}`);
@@ -1091,6 +1283,10 @@ function formatTextReport(report) {
     lines.push(`应用/后端线索：${report.checks.website.backend.hasBackendEvidence ? "有" : "未发现"}`);
     lines.push(`线索数量：${report.checks.website.backend.apiHits.length} 个 API，${report.checks.website.backend.forms} 个表单，${report.checks.website.backend.authHints} 个登录/应用词`);
   }
+  lines.push(`官网证据等级：${report.productEvidence.website.grade}`);
+  lines.push(`官网判断：${report.productEvidence.website.read}`);
+  for (const item of report.productEvidence.website.positives.slice(0, 6)) lines.push(`+ ${item}`);
+  for (const item of report.productEvidence.website.negatives.slice(0, 6)) lines.push(`- ${item}`);
   lines.push("");
   lines.push(`X / Twitter`);
   if (report.urls.twitter?.length) {
@@ -1119,6 +1315,14 @@ function formatTextReport(report) {
   } else {
     lines.push(`暂无 GitHub 仓库证据`);
   }
+  lines.push(`GitHub 证据等级：${report.productEvidence.github.grade}`);
+  lines.push(`GitHub 判断：${report.productEvidence.github.read}`);
+  for (const item of report.productEvidence.github.positives.slice(0, 6)) lines.push(`+ ${item}`);
+  for (const item of report.productEvidence.github.negatives.slice(0, 6)) lines.push(`- ${item}`);
+  lines.push("");
+  lines.push(`叙事参考`);
+  lines.push(narrativeValueRead(report));
+  for (const reason of report.scores.narrative.reasons || []) lines.push(`- ${stripMarker(reason)}`);
   lines.push("");
   lines.push(`外部证据`);
   lines.push(`状态：${report.externalSignals.status}`);
