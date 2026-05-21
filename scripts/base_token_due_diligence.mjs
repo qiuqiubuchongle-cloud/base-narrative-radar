@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import { spawnSync } from "node:child_process";
+import { discoverProject } from "./base_project_discover.mjs";
 
 const CONFIG_PATH = process.env.BASE_DD_CONFIG || "data/base_token_due_diligence.config.json";
 const OUT_DIR = process.env.BASE_DD_OUT_DIR || "data/base_token_due_diligence";
@@ -85,7 +86,7 @@ function uniq(values) {
 
 function normalizeUrl(url) {
   if (!url) return "";
-  const clean = String(url).trim().replace(/[)\].,，。]+$/g, "");
+  const clean = String(url).trim().split(/\\[nrt]|[\s"'<>]/)[0].replace(/[)\].,，。:：]+$/g, "");
   if (/^https?:\/\//i.test(clean)) return clean;
   if (/^[a-z0-9.-]+\.[a-z]{2,}/i.test(clean)) return `https://${clean}`;
   return "";
@@ -110,7 +111,15 @@ function decodeHtml(value) {
 }
 
 function parseArgs(argv) {
-  const args = { tokenAddress: "", website: "", twitter: "", github: "", notes: "", mode: process.env.BASE_DD_MODE || "quick" };
+  const args = {
+    tokenAddress: "",
+    website: "",
+    twitter: "",
+    github: "",
+    notes: "",
+    mode: process.env.BASE_DD_MODE || "quick",
+    autoDiscover: process.env.BASE_DD_AUTO_DISCOVER === "1"
+  };
   for (let i = 2; i < argv.length; i += 1) {
     const arg = argv[i];
     if (/^0x[a-fA-F0-9]{40}$/.test(arg)) args.tokenAddress = arg;
@@ -121,9 +130,26 @@ function parseArgs(argv) {
     else if (arg === "--mode") args.mode = String(argv[++i] || "quick").toLowerCase();
     else if (arg === "--deep") args.mode = "deep";
     else if (arg === "--quick") args.mode = "quick";
+    else if (arg === "--auto-discover") args.autoDiscover = true;
+    else if (arg === "--no-auto-discover") args.autoDiscover = false;
   }
   if (!["quick", "deep"].includes(args.mode)) args.mode = "quick";
   return args;
+}
+
+async function enrichArgsWithDiscovery(args) {
+  if (!args.autoDiscover) return args;
+  const discovery = await discoverProject(args.tokenAddress);
+  const project = discovery.project || {};
+  const merged = {
+    ...args,
+    website: args.website || project.website || "",
+    twitter: args.twitter || project.twitter?.[0] || "",
+    github: args.github || project.github?.[0] || "",
+    notes: [args.notes, discovery.notes].filter(Boolean).join("\n\n"),
+    discovery
+  };
+  return merged;
 }
 
 function extractUrls(value) {
@@ -993,10 +1019,10 @@ function oneLineRead(report) {
 }
 
 async function main() {
-  const args = parseArgs(process.argv);
+  const args = await enrichArgsWithDiscovery(parseArgs(process.argv));
   const tokenAddress = args.tokenAddress;
   if (!tokenAddress) {
-    console.error("Usage: node scripts/base_token_due_diligence.mjs <base_token_ca> [--quick|--deep|--mode quick|deep] [--website <url>] [--twitter <url>] [--github <url>] [--notes \"...\"]");
+    console.error("Usage: node scripts/base_token_due_diligence.mjs <base_token_ca> [--quick|--deep|--mode quick|deep] [--auto-discover] [--website <url>] [--twitter <url>] [--github <url>] [--notes \"...\"]");
     process.exit(1);
   }
   const report = await analyzeToken(tokenAddress, args);

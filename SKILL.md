@@ -3,7 +3,7 @@ name: base-narrative-radar
 description: |
   Use when the user wants to analyze a Base token CA, Base meme/product token, Clanker/Virtuals/Zora/Flaunch/Base App launch,
   or asks whether a Base project's website, X/Twitter, GitHub, narrative, launchpad, or "product rug" risk is real. Supports
-  quick CA screening and deep narrative/news evidence checks. Chinese display name: Base 叙事雷达.
+  automatic project discovery from CA, quick screening, and deep narrative/news evidence checks. Chinese display name: Base 叙事雷达.
 metadata:
   author: local
   version: "1.0.0"
@@ -11,10 +11,11 @@ metadata:
 
 # Base 叙事雷达
 
-Base 叙事雷达用于判断 Base 链产品型 token：输入 CA，快速看懂它是谁、从哪里发射、讲什么故事、官网/GitHub/X 像不像真东西，以及是否值得继续放入 watchlist。
+Base 叙事雷达用于判断 Base 链产品型 token：输入 CA，自动挖官网/X/GitHub/Docs，再快速看懂它是谁、从哪里发射、讲什么故事、官网/GitHub/X 像不像真东西，以及是否值得继续放入 watchlist。
 
 Use this skill for:
 - Base CA 初判、Base token 叙事分析、Clanker/Virtuals/Zora/Flaunch 项目判断
+- 只给 CA 时自动发现官网、X/Twitter、GitHub、Docs、Telegram、DEX Screener 链接
 - 官网真实性、GitHub 活跃度、X/Twitter 认领、dev 是否在 build
 - 产品式 rug 风险：有官网/白皮书/GitHub/demo，但产品可能只是包装
 - 同叙事新闻/生态资料检索，只在用户要求深挖时运行
@@ -41,11 +42,14 @@ Base 不按纯土狗链理解。重点看：
 2. Choose mode:
    - Default to **quick** for normal user asks like “这个 CA 看下/能玩吗/是什么”.
    - Use **deep** only when user says “深挖/研究新闻/找同叙事/我要发内容/产品文档”.
-3. Run the bundled wrapper:
+3. If the user only gives CA, run auto-discovery first:
+   - `npm run base:dd:auto -- <CA>`
+   - Discovery uses DEX Screener, OKX OnchainOS, Basescan when API key exists, and GitHub Search.
+4. If the user already provides reliable website/X/GitHub, run direct due diligence:
    - Quick: `npm run base:dd:quick -- <CA> [args...]`
    - Deep: `npm run base:dd:deep -- <CA> [args...]`
-4. Summarize in Chinese first. Prefer plain text, not Markdown-heavy formatting.
-5. Link the generated `.txt` report path when useful.
+5. Summarize in Chinese first. Prefer plain text, not Markdown-heavy formatting.
+6. Link the generated `.txt` report path when useful.
 
 ## Output Shape
 
@@ -73,6 +77,11 @@ For deep mode, add:
 ## Commands
 
 Examples:
+
+```bash
+npm run base:dd:auto -- \
+  0xd510829f654e102a57c4f6d9bb6879b7cc2ccb07
+```
 
 ```bash
 npm run base:dd:quick -- \
