@@ -3,7 +3,7 @@ import { discoverProject } from "./base_project_discover.mjs";
 
 const OUT_DIR = process.env.BASE_XAI_OUT_DIR || "data/xai-research";
 const XAI_ENDPOINT = process.env.XAI_RESPONSES_URL || "https://api.x.ai/v1/responses";
-const DEFAULT_MODEL = process.env.XAI_MODEL || "grok-4.3";
+const DEFAULT_MODEL = process.env.XAI_MODEL || "grok-4.20-reasoning";
 
 fs.mkdirSync(OUT_DIR, { recursive: true });
 
@@ -236,7 +236,7 @@ function writeOutputs(args, result, prompt, discovery) {
 async function main() {
   const parsed = parseArgs(process.argv);
   if (!parsed.tokenAddress) {
-    console.error("Usage: node scripts/base_xai_research.mjs <base_token_ca> [--website <url>] [--twitter <url>] [--github <url>] [--notes \"...\"] [--market-cap \"$1M\"] [--language zh|en|both] [--model grok-4.3]");
+    console.error("Usage: node scripts/base_xai_research.mjs <base_token_ca> [--website <url>] [--twitter <url>] [--github <url>] [--notes \"...\"] [--market-cap \"$1M\"] [--language zh|en|both] [--model grok-4.20-reasoning]");
     process.exit(1);
   }
   const { args, discovery } = await enrichArgs(parsed);

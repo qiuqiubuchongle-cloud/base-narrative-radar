@@ -84,7 +84,7 @@ For Grok research mode:
 
 ```bash
 XAI_API_KEY=xxxxx
-XAI_MODEL=grok-4.3
+XAI_MODEL=grok-4.20-reasoning
 BASE_XAI_LANGUAGE=zh
 ```
 
