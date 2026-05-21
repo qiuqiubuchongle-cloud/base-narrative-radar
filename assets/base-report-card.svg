@@ -1,0 +1,45 @@
+<svg width="1200" height="620" viewBox="0 0 1200 620" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="620" rx="28" fill="#050505"/>
+  <rect x="40" y="40" width="1120" height="540" rx="26" fill="#0B0D10" stroke="#1E2329"/>
+  <text x="76" y="96" fill="#FFFFFF" font-family="Inter, Arial, sans-serif" font-size="32" font-weight="700">检测报告示意</text>
+  <text x="76" y="132" fill="#8C96A3" font-family="Inter, Arial, sans-serif" font-size="18">Plain text first. Evidence, not vibes.</text>
+
+  <g font-family="Inter, Arial, sans-serif">
+    <rect x="76" y="170" width="500" height="342" rx="20" fill="#11161D" stroke="#2B333D"/>
+    <text x="108" y="214" fill="#F5F7FA" font-size="24" font-weight="700">GitMarket (GITMARKET)</text>
+    <text x="108" y="250" fill="#AAB4C0" font-size="16">Base / Clanker / Developer Tool</text>
+
+    <rect x="108" y="286" width="132" height="60" rx="12" fill="#092D18" stroke="#1A7F37"/>
+    <text x="130" y="322" fill="#7CFFB2" font-size="20" font-weight="700">watch</text>
+
+    <rect x="258" y="286" width="132" height="60" rx="12" fill="#101B33" stroke="#0052FF"/>
+    <text x="282" y="322" fill="#8DB6FF" font-size="20" font-weight="700">66/100</text>
+
+    <rect x="408" y="286" width="132" height="60" rx="12" fill="#2A1B08" stroke="#B87503"/>
+    <text x="430" y="322" fill="#FFD38A" font-size="20" font-weight="700">85/100</text>
+
+    <text x="108" y="392" fill="#FFFFFF" font-size="18" font-weight="700">一句话判断</text>
+    <text x="108" y="424" fill="#AAB4C0" font-size="16">有产品叙事和链上基础，但仍需要</text>
+    <text x="108" y="450" fill="#AAB4C0" font-size="16">dev/X/GitHub 或真实使用继续确认。</text>
+  </g>
+
+  <g font-family="Inter, Arial, sans-serif">
+    <rect x="624" y="170" width="500" height="342" rx="20" fill="#11161D" stroke="#2B333D"/>
+    <text x="656" y="214" fill="#FFFFFF" font-size="22" font-weight="700">证据模块</text>
+
+    <circle cx="668" cy="262" r="8" fill="#0052FF"/>
+    <text x="692" y="268" fill="#DDE8FF" font-size="17">OKX 基础信息：市值 / 流动性 / 风险</text>
+
+    <circle cx="668" cy="310" r="8" fill="#0052FF"/>
+    <text x="692" y="316" fill="#DDE8FF" font-size="17">官网真实性：可访问 / 表单 / API / 应用痕迹</text>
+
+    <circle cx="668" cy="358" r="8" fill="#0052FF"/>
+    <text x="692" y="364" fill="#DDE8FF" font-size="17">GitHub：显式关联 / 最近更新 / 同名撞车</text>
+
+    <circle cx="668" cy="406" r="8" fill="#0052FF"/>
+    <text x="692" y="412" fill="#DDE8FF" font-size="17">叙事价值：Base 用户能否快速理解</text>
+
+    <circle cx="668" cy="454" r="8" fill="#0052FF"/>
+    <text x="692" y="460" fill="#DDE8FF" font-size="17">产品式 Rug：故事很强但证据很薄</text>
+  </g>
+</svg>

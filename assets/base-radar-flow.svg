@@ -1,0 +1,42 @@
+<svg width="1200" height="520" viewBox="0 0 1200 520" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="520" rx="28" fill="#050505"/>
+  <rect x="28" y="28" width="1144" height="464" rx="24" fill="#0B0D10" stroke="#1E2329"/>
+  <text x="70" y="82" fill="#F5F7FA" font-family="Inter, Arial, sans-serif" font-size="34" font-weight="700">Base 叙事雷达工作流</text>
+  <text x="70" y="118" fill="#8C96A3" font-family="Inter, Arial, sans-serif" font-size="18">CA / Website / X / GitHub / Project Copy in, evidence map out.</text>
+
+  <g font-family="Inter, Arial, sans-serif">
+    <rect x="70" y="178" width="180" height="126" rx="18" fill="#11161D" stroke="#2B333D"/>
+    <text x="96" y="218" fill="#FFFFFF" font-size="22" font-weight="700">输入线索</text>
+    <text x="96" y="252" fill="#AAB4C0" font-size="16">CA</text>
+    <text x="96" y="276" fill="#AAB4C0" font-size="16">官网 / X / GitHub</text>
+
+    <path d="M270 241H330" stroke="#0052FF" stroke-width="4" stroke-linecap="round"/>
+    <path d="M322 229L334 241L322 253" stroke="#0052FF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+
+    <rect x="354" y="158" width="210" height="166" rx="18" fill="#11161D" stroke="#2B333D"/>
+    <text x="382" y="198" fill="#FFFFFF" font-size="22" font-weight="700">证据拆解</text>
+    <text x="382" y="232" fill="#AAB4C0" font-size="16">OKX OnchainOS</text>
+    <text x="382" y="256" fill="#AAB4C0" font-size="16">Website Reality</text>
+    <text x="382" y="280" fill="#AAB4C0" font-size="16">GitHub / X Evidence</text>
+
+    <path d="M584 241H644" stroke="#0052FF" stroke-width="4" stroke-linecap="round"/>
+    <path d="M636 229L648 241L636 253" stroke="#0052FF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+
+    <rect x="668" y="158" width="210" height="166" rx="18" fill="#11161D" stroke="#2B333D"/>
+    <text x="696" y="198" fill="#FFFFFF" font-size="22" font-weight="700">叙事判断</text>
+    <text x="696" y="232" fill="#AAB4C0" font-size="16">Agent / Dev Tool</text>
+    <text x="696" y="256" fill="#AAB4C0" font-size="16">Farcaster / Creator</text>
+    <text x="696" y="280" fill="#AAB4C0" font-size="16">Narrative Score</text>
+
+    <path d="M898 241H958" stroke="#0052FF" stroke-width="4" stroke-linecap="round"/>
+    <path d="M950 229L962 241L950 253" stroke="#0052FF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+
+    <rect x="982" y="178" width="148" height="126" rx="18" fill="#0052FF"/>
+    <text x="1014" y="218" fill="#FFFFFF" font-size="22" font-weight="700">结论</text>
+    <text x="1014" y="252" fill="#DDE8FF" font-size="16">watch / avoid</text>
+    <text x="1014" y="276" fill="#DDE8FF" font-size="16">纯文字报告</text>
+  </g>
+
+  <rect x="70" y="370" width="1060" height="64" rx="16" fill="#0F141A" stroke="#202832"/>
+  <text x="100" y="409" fill="#EAF1FF" font-family="Inter, Arial, sans-serif" font-size="18">核心原则：先降低检索成本，再决定要不要继续研究；不是喊单，也不是自动交易。</text>
+</svg>
